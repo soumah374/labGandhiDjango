@@ -97,11 +97,51 @@
         "documentation": {}
     },
     {
+        "label": "get_object_or_404",
+        "importPath": "django.shortcuts",
+        "description": "django.shortcuts",
+        "isExtraImport": true,
+        "detail": "django.shortcuts",
+        "documentation": {}
+    },
+    {
         "label": "HttpResponse",
         "importPath": "django.http",
         "description": "django.http",
         "isExtraImport": true,
         "detail": "django.http",
+        "documentation": {}
+    },
+    {
+        "label": "Http404",
+        "importPath": "django.http",
+        "description": "django.http",
+        "isExtraImport": true,
+        "detail": "django.http",
+        "documentation": {}
+    },
+    {
+        "label": "generic",
+        "importPath": "django.views",
+        "description": "django.views",
+        "isExtraImport": true,
+        "detail": "django.views",
+        "documentation": {}
+    },
+    {
+        "label": "TemplateView",
+        "importPath": "django.views.generic.base",
+        "description": "django.views.generic.base",
+        "isExtraImport": true,
+        "detail": "django.views.generic.base",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "django.utils",
+        "description": "django.utils",
+        "isExtraImport": true,
+        "detail": "django.utils",
         "documentation": {}
     },
     {
@@ -169,7 +209,7 @@
         "kind": 6,
         "importPath": "polls.models",
         "description": "polls.models",
-        "peekOfCode": "class Question(models.Model):\n  question_text = models.CharField(max_length=255)\n  pub_date = models.DateTimeField(\"date publication\")\nclass Choice(models.Model):\n  choice_text = models.CharField(max_length=255)\n  question = models.ForeignKey(Question, on_delete=models.CASCADE)\n  votes = models.IntegerField(default=0)",
+        "peekOfCode": "class Question(models.Model):\n  question_text = models.CharField(max_length=255)\n  pub_date = models.DateTimeField(\"date publication\")\n  def __str__(self):\n    return self.question_text\nclass Choice(models.Model):\n  choice_text = models.CharField(max_length=255)\n  question = models.ForeignKey(Question, on_delete=models.CASCADE)\n  votes = models.IntegerField(default=0)\n  def __str__(self):",
         "detail": "polls.models",
         "documentation": {}
     },
@@ -178,8 +218,17 @@
         "kind": 6,
         "importPath": "polls.models",
         "description": "polls.models",
-        "peekOfCode": "class Choice(models.Model):\n  choice_text = models.CharField(max_length=255)\n  question = models.ForeignKey(Question, on_delete=models.CASCADE)\n  votes = models.IntegerField(default=0)",
+        "peekOfCode": "class Choice(models.Model):\n  choice_text = models.CharField(max_length=255)\n  question = models.ForeignKey(Question, on_delete=models.CASCADE)\n  votes = models.IntegerField(default=0)\n  def __str__(self):\n    return self.choice_text\n# P@ssword",
         "detail": "polls.models",
+        "documentation": {}
+    },
+    {
+        "label": "app_name",
+        "kind": 5,
+        "importPath": "polls.urls",
+        "description": "polls.urls",
+        "peekOfCode": "app_name = 'polls'\nurlpatterns = [\n  path(\"\",views.IndexView.as_view(), name=\"index\"),\n  path(\"details/<int:pk>\", views.DetailView.as_view(), name=\"details\"),\n  path(\"add\", views.QuestionView.as_view(), name=\"add\"),\n]",
+        "detail": "polls.urls",
         "documentation": {}
     },
     {
@@ -187,16 +236,52 @@
         "kind": 5,
         "importPath": "polls.urls",
         "description": "polls.urls",
-        "peekOfCode": "urlpatterns = [\n  path(\"\",views.index, name=\"index\")\n]",
+        "peekOfCode": "urlpatterns = [\n  path(\"\",views.IndexView.as_view(), name=\"index\"),\n  path(\"details/<int:pk>\", views.DetailView.as_view(), name=\"details\"),\n  path(\"add\", views.QuestionView.as_view(), name=\"add\"),\n]",
         "detail": "polls.urls",
         "documentation": {}
     },
     {
-        "label": "index",
+        "label": "IndexView",
+        "kind": 6,
+        "importPath": "polls.views",
+        "description": "polls.views",
+        "peekOfCode": "class IndexView(generic.ListView):\n  template_name = 'index.html'\n  context_object_name = 'questions'\n  def get_queryset(self):\n    return Question.objects.all()\n# def index(request):\n#   questions = Question.objects.all()\n#   context = {\n#     'questions':questions\n#   }",
+        "detail": "polls.views",
+        "documentation": {}
+    },
+    {
+        "label": "DetailView",
+        "kind": 6,
+        "importPath": "polls.views",
+        "description": "polls.views",
+        "peekOfCode": "class DetailView(generic.DetailView):\n  model = Question\n  template_name='details.html'\n# def details(request,question_id):\n#   # try:\n#   #   question = Question.objects.get(id=question_id)\n#   # except:\n#   #   raise Http404(\"Cette question n'existe pas\")\n#   question = get_object_or_404(Question, pk=question_id)\n#   context = {",
+        "detail": "polls.views",
+        "documentation": {}
+    },
+    {
+        "label": "QuestionView",
+        "kind": 6,
+        "importPath": "polls.views",
+        "description": "polls.views",
+        "peekOfCode": "class QuestionView(TemplateView):\n  def get(self,request):\n    return render(request,'addQuestion.html')\n  def post( self, request):\n    question = Question.objects.create(\n    question_text=request.POST.get('question'),\n    pub_date=timezone.now())\n    return render(request,'details.html',{\"question\":question})",
+        "detail": "polls.views",
+        "documentation": {}
+    },
+    {
+        "label": "getQuestion",
         "kind": 2,
         "importPath": "polls.views",
         "description": "polls.views",
-        "peekOfCode": "def index():\n  return HttpResponse(\"HELLO WORLD\")\n# Create your views here.",
+        "peekOfCode": "def getQuestion(request):\n  questions = Question.objects.all()\n  return render(request,'index.html',{\n    \"questions\":questions\n    })\ndef create_question(request):\n  question = Question.objects.create(\n    question_text=request.GET.get('question'),\n    pub_date=timezone.now())\n  questions = Question.objects.all()",
+        "detail": "polls.views",
+        "documentation": {}
+    },
+    {
+        "label": "create_question",
+        "kind": 2,
+        "importPath": "polls.views",
+        "description": "polls.views",
+        "peekOfCode": "def create_question(request):\n  question = Question.objects.create(\n    question_text=request.GET.get('question'),\n    pub_date=timezone.now())\n  questions = Question.objects.all()\n  return render(request,'index.html',{\"questions\":questions})\n# def addQuestion(request):   \n#   if request.POST:\n#     question = Question.objects.create(\n#     question_text=request.POST.get('question'),",
         "detail": "polls.views",
         "documentation": {}
     },
@@ -367,7 +452,7 @@
         "kind": 5,
         "importPath": "sondage.urls",
         "description": "sondage.urls",
-        "peekOfCode": "urlpatterns = [\n    path('admin/', admin.site.urls),\n    path('polls/', include('polls.urls'))\n]",
+        "peekOfCode": "urlpatterns = [\n    path('admin/', admin.site.urls),\n    path('', include('polls.urls'))\n]",
         "detail": "sondage.urls",
         "documentation": {}
     },
